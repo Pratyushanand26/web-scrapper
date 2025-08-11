@@ -1,0 +1,5 @@
+.env
+web-scrapper.exe
+vendor
+go.sum
+web-scrapper.exe
