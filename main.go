@@ -18,7 +18,7 @@ func main() {
 	port := os.Getenv("PORT")
 	jwtsecret := os.Getenv("JWT_SECRET")
 	db_password := os.Getenv("DB_PASSWORD")
-	dsn := fmt.Sprintf("postgres://%s:localhost:5432/testdb?sslmode=disable", db_password)
+	dsn := fmt.Sprintf("postgres://postgres:%s@localhost:5432/testdb?sslmode=disable", db_password)
 
 	if port == "" {
 		log.Fatal("port not found")
@@ -43,6 +43,14 @@ func main() {
 
 	api.POST("/register", func(c *gin.Context) {
 		handlers.Register(c, gormdb)
+	})
+
+	api.POST("/login", func(c *gin.Context) {
+		handlers.Login(c, gormdb)
+	})
+
+	api.POST("/scrape",func(c *gin.Context){
+		handlers.Scrape(c,gormdb)
 	})
 
 	r.Run(":" + port)
