@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"net/url"
 	"strings"
 	"time"
 
@@ -67,4 +68,33 @@ func GoogleScrape(searchTerm string, languageCode string, countryCode string, Pr
 		time.Sleep(time.Duration(sleeptime) * time.Second)
 	}
 	return results, nil
+}
+
+func ScrapeClientRequest(searchURL string,Proxystring interface{})(*http.Response,error){
+  baseClient:=getScrapeClient(Proxystring)
+  req,_:=http.NewRequest("GET",searchURL,nil)
+  req.Header.Set("User-Agent",RandomUserAgent())
+
+  res,err:=baseClient.Do(req)
+  if res.StatusCode!=200{
+	err:=fmt.Errorf("got a non 200 response suggesting a ban")
+	return nil,err
+  }
+
+  if err!=nil{
+	return nil,err
+  }
+  return res,nil
+}
+
+func getScrapeClient(proxystring interface{}) *http.Client{
+
+	switch v:=proxystring.(type){
+	case string:
+		proxyUrl,_:=url.Parse(v);
+		return &http.Client{Transport:&http.Transport{Proxy:http.ProxyURL(proxyUrl)}}
+
+    default:return &http.Client{}
+
+	}
 }
